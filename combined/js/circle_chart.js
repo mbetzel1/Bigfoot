@@ -121,11 +121,13 @@ function circularHeatChart() {
             
                 // Add text for min and max values
                 legend.append("text")
+                .attr("class", "circle-tool")
                 .attr("x", 0)
                 .attr("y", 40)
                 .text(minMax[0]);
             
                 legend.append("text")
+                .attr("class", "circle-tool")
                 .attr("x", 180)
                 .attr("y", 40)
                 .text(minMax[1]);
