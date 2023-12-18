@@ -1,5 +1,5 @@
 //Either end of Viridis palette.
-var circle_palette = ['#440154', '#FDE725']
+var circlePalette = ['#440154', '#FDE725']
 
 //label arrays
 // var radLabels = ['', '', '', '', '', 1985, '', '', '', '', 1990,
@@ -91,6 +91,44 @@ function circularHeatChart() {
                 .attr("xlink:href", "#segment-label-path-"+id)
                 .attr("startOffset", function(d, i) {return i * 100 / numSegments + "%";})
                 .text(function(d) {return d;});
+
+            var minMax = [0,34];
+            var colorScale = d3.scale.linear().domain([minMax[0], minMax[1]]).range([circlePalette[0], circlePalette[1]]);
+            var legendContainer = d3.select("#circle-legend");
+            var legend = legendContainer.append("svg").attr("width", 300).attr("height", 50);
+            var gradient = legend.append("defs")
+                .append("linearGradient")
+                .attr("id", "color-gradient")
+                .attr("x1", "0%")
+                .attr("y1", "0%")
+                .attr("x2", "100%")
+                .attr("y2", "0%");
+            
+            gradient.append("stop")
+                .attr("offset", "0%")
+                .style("stop-color", colorScale(minMax[0]))
+                .style("stop-opacity", 1);
+            
+            gradient.append("stop")
+                .attr("offset", "100%")
+                .style("stop-color", colorScale(minMax[1]))
+                .style("stop-opacity", 1);
+            
+                legend.append("rect")
+                .attr("width", 200)
+                .attr("height", 20)
+                .style("fill", "url(#color-gradient)");
+            
+                // Add text for min and max values
+                legend.append("text")
+                .attr("x", 0)
+                .attr("y", 40)
+                .text(minMax[0]);
+            
+                legend.append("text")
+                .attr("x", 180)
+                .attr("y", 40)
+                .text(minMax[1]);
         });
 
     }
@@ -183,12 +221,12 @@ var chart = circularHeatChart()
 	.innerRadius(7)
     .segmentHeight(7)
     .numSegments(12) // define the overall shape
-    .range(circle_palette)
+    .range(circlePalette)
     //.radialLabels(radLabels)
     .segmentLabels(segLabels);
 	
 	chart.accessor(function(d) {return d.value;})
-	
+
 //add the chart to the parent
 d3.select('#circle-div')
     .selectAll('svg')
