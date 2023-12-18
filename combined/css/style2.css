@@ -5,9 +5,12 @@ body {
 }
 h1 {
 	font-family: "Helvetica Neue", Helvetica, Arial;
-	font-size: 30px;
+	font-size: 20px;
 }
 
+#page-header {
+	padding-left: 30px;
+}
 .charts-container {
 	display:flex;
 	margin: 0;

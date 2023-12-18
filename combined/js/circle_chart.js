@@ -202,6 +202,7 @@ d3.selectAll("#circle-div path").on('mouseover', function() {
 d3.selectAll("#circle-div svg").on('mouseout', function() {
     d3.select("#info").text('');	
 });
+
 // d3.selectAll("#circle-div svg").on('click', function() {
 //     alert('click!');	
 // });
