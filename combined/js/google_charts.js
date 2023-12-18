@@ -45,7 +45,12 @@ function drawRegionsMap() {
         defaultColor: '#000000',
         width: "100%",
         height: "100%",
-        legend: {textStyle: {fontSize: fs}},
+        legend: {
+         position: "right",
+         textStyle: {
+            fontSize: fs,
+         }
+      },
         tooltip: {textStyle: {fontSize: fs}}
     };
     var data = google.visualization.arrayToDataTable([
@@ -147,13 +152,15 @@ function drawVisualization() {
              vAxis: {
                title: 'Encounters',
                titleTextStyle: {
-                  fontSize: fs
+                  fontSize: fs,
+                  italic: false,
                }
             },
              hAxis: {
                title: 'Year',
                titleTextStyle: {
                   fontSize: fs,
+                  italic: false,
                }
             },
              

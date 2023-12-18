@@ -8,60 +8,67 @@ h1 {
 	font-size: 20px;
 }
 
+
 #page-header {
-	padding-left: 30px;
+	padding: 0px;
+	padding-top: 10px;
+	padding-left: 50px;
+	margin: 0px;
 }
 .charts-container {
 	display:flex;
 	margin: 0;
 	padding: 0;
-	height: 1000px;
+	height: 800px;
 }
-
 .left-container {
-	padding: 20px;
-	height: 500px;
+	height: 1200px;
 	flex: 1;
 	display: flex;
 	flex-direction: column;
+	padding: 20px;
+	padding-top: 0px;
 }
 .right-container {
-	padding: 20px;
-	height: 1000px;
+	height: 800px;
 	flex: 1;
 }
 
 .chart-holder {
 	flex: 1;
+	border: 1px solid #000000;
+	border-radius: 10px;
+	padding: 20px;
+	margin: 20px;
+	margin-right: 0px;
+}
+#circle-holder {
+	max-width: 625px;
+	max-height: 750px;
 }
 .chart {
 	height: 100%;
 	width: 100%;
 	max-width: 1000px;
-	max-height: 500px;
+	min-width: 800px;
 }
 #circle-div > svg {
-	height: 1000px;
+	height: 800px;
 	width: 100%;
 }
 #map-div{
-	height: 500px;
+	height: 400px;
 }
 #line-div {
-	height: 500px;
-}
-#map-div > div {
-	height: 500px;
-}
-textPath {
-	font-weight: bold;
-	font-size: 16px;
-	color: #FFFFFF;
+	height: 400px;
 }
 
+#interact {
+	height: 40px;
+}
 .circle-tool {
-	min-height: 40px;
-	font-size: 25px;
+	min-height: 20px;
+	font-size: 15px;
 	margin-block-start: 0em;
 	margin-block-end: 0em;
 }

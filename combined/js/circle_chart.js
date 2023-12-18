@@ -1,6 +1,15 @@
 //Either end of Viridis palette.
 var circle_palette = ['#440154', '#FDE725']
 
+//label arrays
+// var radLabels = ['', '', '', '', '', 1985, '', '', '', '', 1990,
+//  '', '', '', '', 1995, '', '', '', '', 2000,
+//   '', '', '', '', 2005, '', '', '', '', 2010,
+//    '', '', '', '', 2015, '', '', '']
+
+var segLabels = ["January", "February", "March", "April", "May", "June",
+ "July", "August", "September", "October", "November", "December"]
+
 function circularHeatChart() {
     //set some constants
     var margin = {top: 10, right: 5, bottom: 5, left: 25},
@@ -168,13 +177,7 @@ d3.csv("data/bf_months_final.csv", function(error, data) {
 			 
 	});
 
-// var radLabels = ['', '', '', '', '', 1985, '', '', '', '', 1990,
-//  '', '', '', '', 1995, '', '', '', '', 2000,
-//   '', '', '', '', 2005, '', '', '', '', 2010,
-//    '', '', '', '', 2015, '', '', '']
 
-var segLabels = ["January", "February", "March", "April", "May", "June",
- "July", "August", "September", "October", "November", "December"]
  
 var chart = circularHeatChart()
 	.innerRadius(7)
@@ -197,7 +200,7 @@ d3.select('#circle-div')
 /* events */
 d3.selectAll("#circle-div path").on('mouseover', function() {
 	var d = d3.select(this).data()[0];
-    d3.select("#info").text(d.month + '/' + d.year + ' had ' + d.value + ' bigfoot sightings');
+    d3.select("#info").text(segLabels[(d.month - 1)] + ' ' + d.year + ' had ' + d.value + ' bigfoot sightings');
 });
 d3.selectAll("#circle-div svg").on('mouseout', function() {
     d3.select("#info").text('');	
