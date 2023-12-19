@@ -1,6 +1,6 @@
 //parameters for chart
-var innerRadius = 50;
-var segmentHeight = 7;
+var innerRadius = 75;
+var segmentHeight = 7.5;
 var outerRadius = 50 + segmentHeight * 38;
 var numSegments = 12;
 var arcLength = 2*Math.PI/numSegments;
@@ -94,21 +94,24 @@ function circularHeatChart() {
                 .attr("data-index", function(d, i) { return i; })
                 .on("mousemove", function(d){
                     d3.select(this).moveToFront()
-
                     d3.select(this)
                     .transition()
-                    .duration(500)
+                    .duration(200)
                     .attr("d", d3.svg.arc().innerRadius(d.innerRadius - 0.2 * segmentHeight)
                         .outerRadius(d.outerRadius + 0.3 * segmentHeight)
                         .startAngle(d.startAngle - 0.01 * arcLength)
                         .endAngle(d.endAngle + 0.01 * arcLength))
+                    .attr("stroke", "black")
+                    .attr("stroke-width", 0.5)
                 })
                 .on("mouseout", function(d) {
                     d3.select(this)
                     .transition()
                     .duration(500)
                     .attr("fill", function(d) { return color(accessor(d))})
-                    .attr("d", d3.svg.arc().innerRadius(d.innerRadius).outerRadius(d.outerRadius).startAngle(d.startAngle).endAngle(d.endAngle));
+                    .attr("d", d3.svg.arc().innerRadius(d.innerRadius).outerRadius(d.outerRadius).startAngle(d.startAngle).endAngle(d.endAngle))
+                    .attr("stroke", "none")
+                    .attr("stroke-width", 0)
                 })
 
             //this is used for the mouseover behavior
