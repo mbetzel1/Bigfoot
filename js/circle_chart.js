@@ -1,3 +1,18 @@
+//parameters for chart
+var innerRadius = 50
+var segmentHeight = 7
+var outerRadius = 50 + segmentHeight * 38
+var numSegments = 12
+var arcLength = 2*Math.PI/numSegments
+
+//parameters for legend
+var scaleWidth = 200
+var scaleHeight = 20
+var leftPad = 20
+var nColors = palette.length
+var swatchWidth = scaleWidth/nColors
+var startYear = 1980
+
 //Either end of Viridis palette.
 var circlePalette = ['#440154', '#FDE725']
 
@@ -36,20 +51,25 @@ var categories = []
 for (var i = 0; i<= 36; i++) {
     categories.push(i)
 }
+var color = d3.scale.ordinal().domain(categories).range(selectedPalette);
 
+d3.selection.prototype.moveToFront = function() {
+    return this.each(function(){
+      this.parentNode.appendChild(this);
+    });
+  };
 
 function circularHeatChart() {
     //set some constants
     var margin = {top: 10, right: 5, bottom: 5, left: 25},
-    innerRadius = 7,
-    numSegments = 12,
-    segmentHeight = 7,
     domain = null,
     accessor = function(d) {return d;},
     radialLabels = segmentLabels = [];
 
     function chart(selection) {
         selection.each(function(data) {
+
+
             var svg = d3.select(this);
             var offset =  5 + innerRadius + Math.ceil(data.length / numSegments) * (segmentHeight);
             g = svg.append("g")
@@ -61,43 +81,45 @@ function circularHeatChart() {
                 domain = d3.extent(data, accessor);
                 autoDomain = true;
             }
-            var color = d3.scale.ordinal().domain(categories).range(selectedPalette);
+    
             if(autoDomain)
                 domain = null;
 
+            var circleRadius = innerRadius - 3 * segmentHeight
+
+            //segments
             g.selectAll("path").data(data)
                 .enter().append("path")
+                .each(function(d) {
+                    d.outerRadius = innerRadius + ((d.Year - startYear + 1) * segmentHeight)
+                    d.innerRadius = innerRadius + ((d.Year - startYear) * segmentHeight)
+                    d.startAngle = (d.Month - 1) * arcLength
+                    d.endAngle = (d.Month) * arcLength
+                    })
                 .attr("d", d3.svg.arc().innerRadius(ir).outerRadius(or).startAngle(sa).endAngle(ea))
-                .attr("fill", function(d) {return color(accessor(d));});
+                .attr("fill", function(d) {return color(accessor(d));})
+                .attr("data-index", function(d, i) { return i; })
+                .on("mousemove", function(d){
+                    d3.select(this).moveToFront()
+
+                    d3.select(this)
+                    .transition()
+                    .duration(500)
+                    .attr("d", d3.svg.arc().innerRadius(d.innerRadius - segmentHeight)
+                        .outerRadius(d.outerRadius + 5 * segmentHeight)
+                        .startAngle(d.startAngle - 0.1 * arcLength)
+                        .endAngle(d.endAngle + 0.1 * arcLength))
+                })
+                .on("mouseout", function(d) {
+                    d3.select(this)
+                    .transition()
+                    .duration(500)
+                    .attr("fill", function(d) { return color(accessor(d))})
+                    .attr("d", d3.svg.arc().innerRadius(d.innerRadius).outerRadius(d.outerRadius).startAngle(d.startAngle).endAngle(d.endAngle));
+                })
 
             // Unique id so that the text path defs are unique - is there a better way to do this?
             var id = d3.selectAll(".circular-heat")[0].length;
-
-            //Radial labels
-            // var lsa = 0.01; //Label start angle
-            // var labels = svg.append("g")
-            //     .classed("labels", true)
-            //     .classed("radial", true)
-            //     .attr("transform", "translate(" + parseInt(margin.left + offset) + "," + parseInt(margin.top + offset) + ")");
-
-            // //add the label paths
-            // labels.selectAll("def")
-            //     .data(radialLabels).enter()
-            //     .append("def")
-            //     .append("path")
-            //     .attr("id", function(d, i) {return "radial-label-path-"+id+"-"+i;})
-            //     .attr("d", function(d, i) {
-            //         var r = innerRadius + ((i + 0.2) * segmentHeight);
-            //         return "m" + r * Math.sin(lsa) + " -" + r * Math.cos(lsa) + 
-            //                 " a" + r + " " + r + " 0 1 1 -1 0";
-            //     })
-            // //add the label text
-            // labels.selectAll("text")
-            //     .data(radialLabels).enter()
-            //     .append("text")
-            //     .append("textPath")
-            //     .attr("xlink:href", function(d, i) {return "#radial-label-path-"+id+"-"+i;})
-            //     .text(function(d) {return d;});
 
             //Segment labels
             var segmentLabelOffset = 2;
@@ -120,21 +142,11 @@ function circularHeatChart() {
                 .attr("startOffset", function(d, i) {return i * 100 / numSegments + "%";})
                 .text(function(d) {return d;});
 
-
-            var minMax = [0,34];
+            //draw legend
             var legendContainer = d3.select("#circle-legend");
             var legend = legendContainer.append("svg").attr("width", 300).attr("height", 100);
-
-            scaleWidth = 200
-            scaleHeight = 20
-            leftPad = 20
-            nColors = palette.length
-            swatchWidth = scaleWidth/nColors
-            
-            var scaleContainer = document.createElementNS('https://www.w3.org/2000/svg', 'g');
-
             var colorIndex = 0;
-            console.log(legend)
+
             palette.forEach(function (color) {
                 legend.append("rect")
                 .attr("width", swatchWidth)
@@ -145,23 +157,21 @@ function circularHeatChart() {
                 .attr('stroke', "none")
                 .attr('stroke-width', 0)
                 .attr("class", "color-swatch")
-                // console.log(legend)
-                // scaleContainer.appendChild(swatch)
                 colorIndex += swatchWidth
             })
 
-                // Add text for min and max values
+            // Add text for min and max values
             legend.append("text")
                 .attr("class", "circle-tool")
                 .attr("x", 0)
                 .attr("y", 15)
-                .text(minMax[0]);
+                .text(0);
             
             legend.append("text")
                 .attr("class", "circle-tool")
                 .attr("x", leftPad + scaleWidth + leftPad/2)
                 .attr("y", 15)
-                .text(minMax[1]);
+                .text(selectedPalette.length);
         });
 
     }
@@ -241,45 +251,55 @@ d3.csv("data/bf_months_final.csv", function(error, data) {
 	data.forEach(function(d){
 			
 		//sets the specfic values in the data array
-		d.year = d.Year
-		d.month = d.Month
-		d.value = +d.Value
+		d.Year = parseInt(d.Year)
+		d.Month = parseInt(d.Month)
+		d.Value = +d.Value
 		//return {"month": m, "value":v} ;
 			 
 	});
 
-var chart = circularHeatChart()
-	.innerRadius(7)
-    .segmentHeight(7)
-    .numSegments(12) // define the overall shape
-    .range(circlePalette)
-    //.radialLabels(radLabels)
-    .segmentLabels(segLabels);
-	
-	chart.accessor(function(d) {return d.value;})
+    var chart = circularHeatChart()
+        .innerRadius(innerRadius)
+        .segmentHeight(segmentHeight)
+        .numSegments(numSegments) // define the overall shape
+        .range(circlePalette)
+        //.radialLabels(radLabels)
+        .segmentLabels(segLabels);
+        
+        chart.accessor(function(d) {return d.Value;})
 
-//add the chart to the parent
-d3.select('#circle-div')
-    .selectAll('svg')
-    .data([data])
-    .enter()
-    .insert('svg', ".chart-title")
-    .call(chart);
+    //add the chart to the parent
+    d3.select('#circle-div')
+        .selectAll('svg')
+        .data([data])
+        .enter()
+        .insert('svg', ".chart-title")
+        .call(chart);
 
-/* events */
-d3.selectAll("#circle-div path").on('mouseover', function() {
-	var d = d3.select(this).data()[0];
-    d3.select("#info").text(segLabels[(d.month - 1)] + ' ' + d.year + ' had ' + d.value + ' bigfoot sightings');
+    currentIndex = null
+
+
+
+    /* events */
+    d3.selectAll("#circle-div path").on('mouseover', function() {
+        // d3.select(this)
+        // .transition()
+        // .duration(200)
+        // .attr("d", arcOver);
+        
+        var d = d3.select(this).data()[0];
+        d3.select("#info").text(segLabels[(d.Month - 1)] + ' ' + d.Year + ' had ' + d.Value + ' bigfoot sightings');
+        
+    });
+    d3.selectAll("#circle-div svg").on('mouseout', function() {
+        d3.select("#info").text('');
+        // d3.select(this)
+        //   .transition()
+        //   .duration(200)
+        //   .attr("d", d3.svg.arc().innerRadius(ir).outerRadius(or).startAngle(sa).endAngle(ea))
+    });
 });
-d3.selectAll("#circle-div svg").on('mouseout', function() {
-    d3.select("#info").text('');	
-});
 
-// d3.selectAll("#circle-div svg").on('click', function() {
-//     alert('click!');	
-// });
-
-});
 
 
 
