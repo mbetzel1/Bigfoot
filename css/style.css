@@ -43,20 +43,29 @@ h1 {
 	padding: 20px;
 	margin: 20px;
 	margin-right: 0px;
+	max-width: 1000px;
 }
+
 #circle-holder {
-	max-width: 700px;
-	max-height: 900px;
+	max-width: 1000px;
+	max-height: 1000px;
 }
 .chart {
 	height: 100%;
 	width: 100%;
-	max-width: 1000px;
+	max-width: 1100px;
 	min-width: 800px;
 }
-#circle-div > svg {
-	height: 750px;
+#circle-div {
 	width: 100%;
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+#circle-div > svg {
+	height: 800px;
+	width: 800px;
 }
 #map-div{
 	height: 400px;

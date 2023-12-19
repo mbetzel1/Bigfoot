@@ -1,9 +1,11 @@
 //parameters for chart
-var innerRadius = 50
-var segmentHeight = 7
-var outerRadius = 50 + segmentHeight * 38
-var numSegments = 12
-var arcLength = 2*Math.PI/numSegments
+var innerRadius = 50;
+var segmentHeight = 7;
+var outerRadius = 50 + segmentHeight * 38;
+var numSegments = 12;
+var arcLength = 2*Math.PI/numSegments;
+var transright = 200;
+var transdown = 200;
 
 //parameters for legend
 var scaleWidth = 200
@@ -15,16 +17,8 @@ var startYear = 1980
 
 //Either end of Viridis palette.
 var circlePalette = ['#440154', '#FDE725']
-
-//label arrays
-// var radLabels = ['', '', '', '', '', 1985, '', '', '', '', 1990,
-//  '', '', '', '', 1995, '', '', '', '', 2000,
-//   '', '', '', '', 2005, '', '', '', '', 2010,
-//    '', '', '', '', 2015, '', '', '']
-
 var segLabels = ["January", "February", "March", "April", "May", "June",
  "July", "August", "September", "October", "November", "December"]
-
  var palette = ["#440154","#440256","#450457","#450559","#46075a","#46085c","#460a5d","#460b5e","#470d60","#470e61","#471063","#471164","#471365",
  "#481467","#481668","#481769","#48186a","#481a6c","#481b6d","#481c6e","#481d6f","#481f70","#482071","#482173","#482374","#482475","#482576",
  "#482677","#482878","#482979","#472a7a","#472c7a","#472d7b","#472e7c","#472f7d","#46307e","#46327e","#46337f","#463480","#453581","#453781",
@@ -44,6 +38,8 @@ var segLabels = ["January", "February", "March", "April", "May", "June",
  "#aadc32","#addc30","#b0dd2f","#b2dd2d","#b5de2b","#b8de29","#bade28","#bddf26","#c0df25","#c2df23","#c5e021","#c8e020","#cae11f","#cde11d",
  "#d0e11c","#d2e21b","#d5e21a","#d8e219","#dae319","#dde318","#dfe318","#e2e418","#e5e419","#e7e419","#eae51a","#ece51b","#efe51c","#f1e51d",
  "#f4e61e","#f6e620","#f8e621","#fbe723","#fde725"]
+
+ //narrow down the palette to something manageable
  var selectedPalette = palette.filter(function(item, index) {
      return index % 7 === 0;
  });
@@ -51,13 +47,10 @@ var categories = []
 for (var i = 0; i<= 36; i++) {
     categories.push(i)
 }
+// our color scale
 var color = d3.scale.ordinal().domain(categories).range(selectedPalette);
 
-d3.selection.prototype.moveToFront = function() {
-    return this.each(function(){
-      this.parentNode.appendChild(this);
-    });
-  };
+
 
 function circularHeatChart() {
     //set some constants
@@ -118,6 +111,13 @@ function circularHeatChart() {
                     .attr("d", d3.svg.arc().innerRadius(d.innerRadius).outerRadius(d.outerRadius).startAngle(d.startAngle).endAngle(d.endAngle));
                 })
 
+            //this is used for the mouseover behavior
+                d3.selection.prototype.moveToFront = function() {
+                    return this.each(function(){
+                    this.parentNode.appendChild(this);
+                    });
+                };
+
             // Unique id so that the text path defs are unique - is there a better way to do this?
             var id = d3.selectAll(".circular-heat")[0].length;
 
@@ -142,6 +142,7 @@ function circularHeatChart() {
                 .attr("startOffset", function(d, i) {return i * 100 / numSegments + "%";})
                 .text(function(d) {return d;});
 
+            
             //draw legend
             var legendContainer = d3.select("#circle-legend");
             var legend = legendContainer.append("svg").attr("width", 300).attr("height", 100);
@@ -172,8 +173,10 @@ function circularHeatChart() {
                 .attr("x", leftPad + scaleWidth + leftPad/2)
                 .attr("y", 15)
                 .text(selectedPalette.length);
-        });
 
+            svg.selectAll("*").attr("transform", "translate(" + transright + "," + transdown + ")")
+        });
+    
     }
 
     /* Arc functions */
