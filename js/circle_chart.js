@@ -8,12 +8,14 @@ var transright = 200;
 var transdown = 200;
 
 //parameters for legend
-var scaleWidth = 200
-var scaleHeight = 20
-var leftPad = 20
-var nColors = palette.length
-var swatchWidth = scaleWidth/nColors
-var startYear = 1980
+var scaleWidth = 200;
+var scaleHeight = 25;
+var leftPad = 25;
+var nColors = palette.length;
+var swatchWidth = scaleWidth/nColors;
+var startYear = 1980;
+var legendFontSize = 24;
+
 
 //Either end of Viridis palette.
 var circlePalette = ['#440154', '#FDE725']
@@ -78,6 +80,63 @@ function circularHeatChart() {
     
             if(autoDomain)
                 domain = null;
+            
+             //draw legend
+             var legendContainer = d3.select("#circle-legend");
+             var legend = legendContainer.append("svg").attr("width", 300).attr("height", 100);
+             var colorIndex = 0;
+ 
+             palette.forEach(function (color) {
+                 legend.append("rect")
+                 .attr("width", swatchWidth)
+                 .attr("height", scaleHeight)
+                 .attr("x", leftPad + colorIndex)
+                 .attr("y", 20)
+                 .attr('fill', color)
+                 .attr('stroke', "none")
+                 .attr('stroke-width', 0)
+                 .attr("class", "color-swatch")
+                 colorIndex += swatchWidth
+             })
+ 
+             // Add text for min and max values
+             legend.append("text")
+                 .attr("class", "circle-tool")
+                 .style("font-size", legendFontSize)
+                 .attr("x", 0)
+                 .attr("y", 40)
+                 .text(0);
+             
+             legend.append("text")
+                 .attr("class", "circle-tool")
+                 .style("font-size", legendFontSize)
+                 .attr("x", leftPad + scaleWidth + leftPad/2)
+                 .attr("y", 40)
+                 .text(selectedPalette.length);
+ 
+             var triangleX =25;
+             var triangleWidth = 7;
+             var triangleY = 20;
+             var triangleHeight = -12;
+             var scaleLength = 200;
+             //triangle
+
+             trianglePath = [
+                 {x: triangleX, y: triangleY},
+                 {x: triangleX + triangleWidth, y: triangleY + triangleHeight},
+                 {x: triangleX - triangleWidth, y: triangleY + triangleHeight}
+             ];
+             var lineFunction = d3.svg.line()
+                 .x(function(d) { return d.x; })
+                 .y(function(d) {return d.y; })
+                 .interpolate("linear-closed");
+ 
+             triangle = legend.append("path")
+                 .attr("d", lineFunction(trianglePath))
+                 .attr("fill", "none")
+                 .attr("stroke", "none")
+                 .attr("id", "triangle")
+
 
             var tooltip = d3.select("#tooltip")
                     .style("display", "none")
@@ -116,10 +175,11 @@ function circularHeatChart() {
                     date.text(monthAbbrevs[d.Month - 1] +  " "  + d.Year );
                     sightings.html("</b><p>Sightings: " + "<b>" + d.Value + "</b></p>");
                     
+                    //tooltip
                     xNudge = 50
                     yNudge = 100
                     month = parseInt(d.Month)
-                    
+
                     if ((month > 9) || (month < 4)) {
                         yNudge = 25
                     } else {
@@ -131,8 +191,11 @@ function circularHeatChart() {
                     } else {
                         xnudge = 0
                     }
-
                     tooltip.style("left", (d3.event.pageX + xNudge) + "px").style("top",(d3.event.pageY + yNudge + "px"))
+
+                    triangle.attr("transform", "translate(" + (d.Value * 200/37) + ",0)")
+                        .attr("stroke", "black")
+                        .attr("fill", "black")
                     
                 })
                 //smaller and no border on mouseout
@@ -146,6 +209,8 @@ function circularHeatChart() {
                     .attr("stroke-width", 0)
 
                     tooltip.style("display", "none")
+                    triangle.attr("stroke", "none")
+                        .attr("fill", "none")
                 })
 
                 var drag = d3.behavior.drag()
@@ -189,38 +254,6 @@ function circularHeatChart() {
                 .attr("xlink:href", "#segment-label-path-"+id)
                 .attr("startOffset", function(d, i) {return i * 100 / numSegments + "%";})
                 .text(function(d) {return d;});
-
-            
-            //draw legend
-            var legendContainer = d3.select("#circle-legend");
-            var legend = legendContainer.append("svg").attr("width", 300).attr("height", 100);
-            var colorIndex = 0;
-
-            palette.forEach(function (color) {
-                legend.append("rect")
-                .attr("width", swatchWidth)
-                .attr("height", scaleHeight)
-                .attr("x", leftPad + colorIndex)
-                .attr("y", 0)
-                .attr('fill', color)
-                .attr('stroke', "none")
-                .attr('stroke-width', 0)
-                .attr("class", "color-swatch")
-                colorIndex += swatchWidth
-            })
-
-            // Add text for min and max values
-            legend.append("text")
-                .attr("class", "circle-tool")
-                .attr("x", 0)
-                .attr("y", 15)
-                .text(0);
-            
-            legend.append("text")
-                .attr("class", "circle-tool")
-                .attr("x", leftPad + scaleWidth + leftPad/2)
-                .attr("y", 15)
-                .text(selectedPalette.length);
 
             svg.selectAll("*").attr("transform", "translate(" + transright + "," + transdown + ")")
         });
