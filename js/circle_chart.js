@@ -18,7 +18,8 @@ var startYear = 1980
 //Either end of Viridis palette.
 var circlePalette = ['#440154', '#FDE725']
 var segLabels = ["January", "February", "March", "April", "May", "June",
- "July", "August", "September", "October", "November", "December"]
+ "July", "August", "September", "October", "November", "December"];
+var monthAbbrevs = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
  var palette = ["#440154","#440256","#450457","#450559","#46075a","#46085c","#460a5d","#460b5e","#470d60","#470e61","#471063","#471164","#471365",
  "#481467","#481668","#481769","#48186a","#481a6c","#481b6d","#481c6e","#481d6f","#481f70","#482071","#482173","#482374","#482475","#482576",
  "#482677","#482878","#482979","#472a7a","#472c7a","#472d7b","#472e7c","#472f7d","#46307e","#46327e","#46337f","#463480","#453581","#453781",
@@ -78,7 +79,11 @@ function circularHeatChart() {
             if(autoDomain)
                 domain = null;
 
-            var circleRadius = innerRadius - 3 * segmentHeight
+            var tooltip = d3.select("#tooltip")
+                    .style("display", "none")
+
+            var date = d3.select("#date").text("DATE")
+            var sightings = d3.select("#sightings").text("SIGHTINGS")
 
             //segments
             g.selectAll("path").data(data)
@@ -92,18 +97,45 @@ function circularHeatChart() {
                 .attr("d", d3.svg.arc().innerRadius(ir).outerRadius(or).startAngle(sa).endAngle(ea))
                 .attr("fill", function(d) {return color(accessor(d));})
                 .attr("data-index", function(d, i) { return i; })
-                .on("mousemove", function(d){
+                //bigger and border on mouseover
+                .on("mouseover", function(d){
+        
+                })
+                .on("mousemove", function(d) {
                     d3.select(this).moveToFront()
                     d3.select(this)
                     .transition()
-                    .duration(200)
+                    .duration(300)
                     .attr("d", d3.svg.arc().innerRadius(d.innerRadius - 0.2 * segmentHeight)
                         .outerRadius(d.outerRadius + 0.3 * segmentHeight)
-                        .startAngle(d.startAngle - 0.01 * arcLength)
-                        .endAngle(d.endAngle + 0.01 * arcLength))
+                        .startAngle(d.startAngle - 0.02 * arcLength)
+                        .endAngle(d.endAngle + 0.02 * arcLength))
                     .attr("stroke", "black")
                     .attr("stroke-width", 0.5)
+                    tooltip.style("display", "block")
+                    date.text(monthAbbrevs[d.Month - 1] +  " "  + d.Year );
+                    sightings.html("</b><p>Sightings: " + "<b>" + d.Value + "</b></p>");
+                    
+                    xNudge = 50
+                    yNudge = 100
+                    month = parseInt(d.Month)
+                    
+                    if ((month > 9) || (month < 4)) {
+                        yNudge = 25
+                    } else {
+                        yNudge = -100
+                    }
+
+                    if (month < 7) {
+                        xNudge = -175
+                    } else {
+                        xnudge = 0
+                    }
+
+                    tooltip.style("left", (d3.event.pageX + xNudge) + "px").style("top",(d3.event.pageY + yNudge + "px"))
+                    
                 })
+                //smaller and no border on mouseout
                 .on("mouseout", function(d) {
                     d3.select(this)
                     .transition()
@@ -112,7 +144,20 @@ function circularHeatChart() {
                     .attr("d", d3.svg.arc().innerRadius(d.innerRadius).outerRadius(d.outerRadius).startAngle(d.startAngle).endAngle(d.endAngle))
                     .attr("stroke", "none")
                     .attr("stroke-width", 0)
+
+                    tooltip.style("display", "none")
                 })
+
+                var drag = d3.behavior.drag()
+                .on("dragstart", function(d) {
+                })
+                .on("drag", function(d) {
+                    angle = Math.atan(((d3.event.y - transdown)*Math.PI/180)/((d3.event.x - transright)*Math.PI/180))
+                })
+                .on("dragend", function(d) {
+                });
+                
+            svg.call(drag);
 
             //this is used for the mouseover behavior
                 d3.selection.prototype.moveToFront = function() {
