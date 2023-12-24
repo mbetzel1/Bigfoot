@@ -1,11 +1,11 @@
 //parameters for chart
 var innerRadius = 75;
-var segmentHeight = 7.5;
+var segmentHeight = 5;
 var outerRadius = 50 + segmentHeight * 38;
 var numSegments = 12;
 var arcLength = 2*Math.PI/numSegments;
-var transright = 200;
-var transdown = 200;
+var transright = 145;
+var transdown = 145;
 
 //parameters for legend
 var scaleWidth = 200;
@@ -83,7 +83,7 @@ function circularHeatChart() {
             
              //draw legend
              var legendContainer = d3.select("#circle-legend");
-             var legend = legendContainer.append("svg").attr("width", 300).attr("height", 100);
+             var legend = legendContainer.append("svg").attr("width", 300).attr("height", 50);
              var colorIndex = 0;
  
              palette.forEach(function (color) {
