@@ -86,7 +86,7 @@ b {
 }
 
 #tooltip {
-	height: 100px;
+	height: 95px;
 	width: 175px;
 	background-color: white;
 	position: absolute;
@@ -100,10 +100,9 @@ b {
 #date {
 	white-space: nowrap;
 	font-weight: bold;
-	padding-bottom: 0px;
 }
 #sightings {
-	padding-top: 0px;
+
 }
 #topnav {
 	background-color: #440154;
