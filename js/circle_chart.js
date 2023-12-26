@@ -4,7 +4,7 @@ var segmentHeight = 5;
 var outerRadius = 50 + segmentHeight * 38;
 var numSegments = 12;
 var arcLength = 2*Math.PI/numSegments;
-var transright = 145;
+var transright = 150;
 var transdown = 155;
 
 //parameters for legend
