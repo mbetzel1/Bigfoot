@@ -11,8 +11,6 @@ var transdown = 155;
 var scaleWidth = 200;
 var scaleHeight = 25;
 var leftPad = 25;
-var nColors = palette.length;
-var swatchWidth = scaleWidth/nColors;
 var startYear = 1980;
 var legendFontSize = 24;
 
@@ -22,7 +20,7 @@ var circlePalette = ['#440154', '#FDE725']
 var segLabels = ["January", "February", "March", "April", "May", "June",
  "July", "August", "September", "October", "November", "December"];
 var monthAbbrevs = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
- var palette = ["#440154","#440256","#450457","#450559","#46075a","#46085c","#460a5d","#460b5e","#470d60","#470e61","#471063","#471164","#471365",
+var palette = ["#440154","#440256","#450457","#450559","#46075a","#46085c","#460a5d","#460b5e","#470d60","#470e61","#471063","#471164","#471365",
  "#481467","#481668","#481769","#48186a","#481a6c","#481b6d","#481c6e","#481d6f","#481f70","#482071","#482173","#482374","#482475","#482576",
  "#482677","#482878","#482979","#472a7a","#472c7a","#472d7b","#472e7c","#472f7d","#46307e","#46327e","#46337f","#463480","#453581","#453781",
  "#453882","#443983","#443a83","#443b84","#433d84","#433e85","#423f85","#424086","#424186","#414287","#414487","#404588","#404688","#3f4788",
@@ -41,6 +39,9 @@ var monthAbbrevs = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep
  "#aadc32","#addc30","#b0dd2f","#b2dd2d","#b5de2b","#b8de29","#bade28","#bddf26","#c0df25","#c2df23","#c5e021","#c8e020","#cae11f","#cde11d",
  "#d0e11c","#d2e21b","#d5e21a","#d8e219","#dae319","#dde318","#dfe318","#e2e418","#e5e419","#e7e419","#eae51a","#ece51b","#efe51c","#f1e51d",
  "#f4e61e","#f6e620","#f8e621","#fbe723","#fde725"]
+
+ var nColors = palette.length;
+ var swatchWidth = scaleWidth/nColors;
 
  //narrow down the palette to something manageable
  var selectedPalette = palette.filter(function(item, index) {
@@ -118,7 +119,6 @@ function circularHeatChart() {
              var triangleWidth = 7;
              var triangleY = 20;
              var triangleHeight = -12;
-             var scaleLength = 200;
              //triangle
 
              trianglePath = [
@@ -176,21 +176,22 @@ function circularHeatChart() {
                     sightings.html("</b><p>Sightings: " + "<b>" + d.Value + "</b></p>");
                     
                     //tooltip
-                    xNudge = 50
-                    yNudge = 100
-                    month = parseInt(d.Month)
+                    var xNudge
+                    var yNudge
+                    var month = parseInt(d.Month)
 
                     if ((month > 9) || (month < 4)) {
                         yNudge = 25
                     } else {
-                        yNudge = -100
+                        yNudge = -115
                     }
 
                     if (month < 7) {
-                        xNudge = -175
+                        xNudge = -225
                     } else {
-                        xnudge = 0
+                        xNudge = 50
                     }
+
                     tooltip.style("left", (d3.event.pageX + xNudge) + "px").style("top",(d3.event.pageY + yNudge + "px"))
 
                     triangle.attr("transform", "translate(" + (d.Value * 200/37) + ",0)")
