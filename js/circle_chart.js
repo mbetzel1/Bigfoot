@@ -141,6 +141,9 @@ function circularHeatChart() {
             var tooltip = d3.select("#tooltip")
                     .style("display", "none")
 
+            tooltip_height = parseInt(tooltip.style("height"))
+            tooltip_width = parseInt(tooltip.style("width"))
+
             var date = d3.select("#date").text("DATE")
             var sightings = d3.select("#sightings").text("SIGHTINGS")
 
@@ -176,23 +179,25 @@ function circularHeatChart() {
                     sightings.html("</b><p>Sightings: " + "<b>" + d.Value + "</b></p>");
                     
                     //tooltip
-                    var xNudge
-                    var yNudge
+                    var xTooltipAdjust
+                    var yTooltipAdjust
+                    var xTooltipNudge = 50
+                    var yTooltipNudge = 20
                     var month = parseInt(d.Month)
 
                     if ((month > 9) || (month < 4)) {
-                        yNudge = 25
+                        yTooltipAdjust = yTooltipNudge
                     } else {
-                        yNudge = -115
+                        yTooltipAdjust = -tooltip_height - yTooltipNudge
                     }
 
                     if (month < 7) {
-                        xNudge = -225
+                        xTooltipAdjust = -tooltip_width - xTooltipNudge
                     } else {
-                        xNudge = 50
+                        xTooltipAdjust = xTooltipNudge
                     }
 
-                    tooltip.style("left", (d3.event.pageX + xNudge) + "px").style("top",(d3.event.pageY + yNudge + "px"))
+                    tooltip.style("left", (d3.event.pageX + xTooltipAdjust) + "px").style("top",(d3.event.pageY + yTooltipAdjust + "px"))
 
                     triangle.attr("transform", "translate(" + (d.Value * 200/37) + ",0)")
                         .attr("stroke", "black")
