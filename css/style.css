@@ -117,3 +117,8 @@ b {
 .active {
 	font-weight: bolder;
 }
+
+#bfro-link {
+	margin-right: 5px;
+}
+
